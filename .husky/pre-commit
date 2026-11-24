@@ -1,0 +1,7 @@
+#!/bin/sh
+# .husky/pre-commit — Formats the staged files with Prettier.
+#
+# Runs in a throwaway devkit container, so nobody needs Node or Bun installed.
+# If Docker isn't running, the commit aborts instead of skipping the check.
+
+docker compose --progress quiet run --rm -T app bunx lint-staged

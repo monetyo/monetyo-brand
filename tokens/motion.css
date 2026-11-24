@@ -1,0 +1,4 @@
+@theme {
+  /* The one easing curve: weighted, decelerating into place. */
+  --ease-out-expo: cubic-bezier(0.22, 1, 0.36, 1);
+}

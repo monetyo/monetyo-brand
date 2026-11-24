@@ -1,0 +1,52 @@
+{
+  "name": "@monetyo/brand",
+  "version": "0.1.0",
+  "description": "Monetyo's logos and design tokens",
+  "license": "SEE LICENSE IN LICENSE.md",
+  "homepage": "https://github.com/monetyo/monetyo-brand#readme",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/monetyo/monetyo-brand.git"
+  },
+  "type": "module",
+  "exports": {
+    "./theme.css": "./tokens/theme.css",
+    "./tokens.json": "./tokens/tokens.json",
+    "./logos/*": "./logos/*",
+    "./exports/*": "./exports/*"
+  },
+  "files": [
+    "logos",
+    "exports",
+    "tokens"
+  ],
+  "publishConfig": {
+    "access": "public"
+  },
+  "scripts": {
+    "prepare": "husky",
+    "export": "bun scripts/export-logos.ts && bun scripts/export-tokens.ts",
+    "format": "prettier --write .",
+    "format:check": "prettier --check .",
+    "lint": "xmllint --noout logos/*.svg && tailwindcss --input checks/theme.css --output /dev/null"
+  },
+  "lint-staged": {
+    "*": "prettier --write --ignore-unknown"
+  },
+  "dependencies": {
+    "@fontsource-variable/host-grotesk": "^5.3.0"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^4.0.0"
+  },
+  "devDependencies": {
+    "@commitlint/cli": "^21.2.4",
+    "@commitlint/config-conventional": "^21.2.4",
+    "@resvg/resvg-js": "^2.6.2",
+    "@tailwindcss/cli": "^4.3.5",
+    "husky": "^9.1.7",
+    "lint-staged": "^17.6.2",
+    "prettier": "^3.10.1",
+    "tailwindcss": "^4.3.5"
+  }
+}

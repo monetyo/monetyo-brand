@@ -1,0 +1,23 @@
+name: monetyo-brand
+
+services:
+  app:
+    build:
+      context: .
+      dockerfile: ./.docker/bun/Dockerfile
+    working_dir: /app
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules
+
+  python:
+    build:
+      context: .
+      dockerfile: ./.docker/python/Dockerfile
+    working_dir: /app
+    volumes:
+      - .:/app
+      - node_modules:/app/node_modules:ro
+
+volumes:
+  node_modules:

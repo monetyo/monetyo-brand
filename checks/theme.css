@@ -1,0 +1,5 @@
+@import "tailwindcss";
+
+@import "../tokens/theme.css";
+
+@source inline("display-1 display-2 heading-{2..6} eyebrow lead lead-hero quote body-{2..6} button-md button-sm caption-5");

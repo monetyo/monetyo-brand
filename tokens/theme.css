@@ -1,0 +1,6 @@
+/* Monetyo's design tokens as Tailwind CSS v4 theme variables. Import after
+  Tailwind: `@import "tailwindcss"; @import "@monetyo/brand/theme.css";` */
+
+@import "./typography.css";
+@import "./colors.css";
+@import "./motion.css";

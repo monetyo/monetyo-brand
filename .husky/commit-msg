@@ -1,0 +1,4 @@
+#!/bin/sh
+# .husky/commit-msg — Validates the commit message with commitlint.
+
+docker compose --progress quiet run --rm -T app bunx commitlint --edit "$1"
