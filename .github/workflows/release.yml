@@ -45,14 +45,8 @@ jobs:
           registry-url: https://registry.npmjs.org
           package-manager-cache: false
 
-      # Trusted publishing needs npm 11.5.1 or later. NPM_TOKEN is only for the
-      # very first version, before a trusted publisher can be set up.
       - name: Publish to npm
-        env:
-          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
-        run: |
-          npm install --global npm@latest
-          npm publish --provenance
+        run: npm publish --provenance
 
       - name: Create the release
         env:
