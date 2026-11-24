@@ -1,0 +1,38 @@
+name: Generated
+
+on:
+  push:
+    branches: [main]
+  pull_request:
+  workflow_dispatch:
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
+permissions:
+  contents: read
+
+jobs:
+  logos:
+    name: Generated files are up to date
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+
+      - name: Install dependencies
+        run: docker compose run --rm -T -e HUSKY=0 app bun install --frozen-lockfile
+
+      - name: Draw the logos
+        run: docker compose run --rm -T python python scripts/draw-logos.py
+
+      - name: Export the PNG, ICO and JSON files
+        run: docker compose run --rm -T app bun run export
+
+      - name: Check nothing changed
+        run: |
+          if [ -n "$(git status --porcelain -- logos exports tokens/tokens.json)" ]; then
+            git status --short -- logos exports tokens/tokens.json
+            echo "::error::Generated files are out of date. Run the two generators and commit the result."
+            exit 1
+          fi

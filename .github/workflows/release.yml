@@ -1,0 +1,70 @@
+name: Release
+
+on:
+  push:
+    tags: ["v*.*.*"]
+
+permissions:
+  contents: write
+  id-token: write
+
+jobs:
+  release:
+    name: Publish and create the release
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v6
+        with:
+          fetch-depth: 0
+
+      - name: Check the package version matches the tag
+        env:
+          TAG: ${{ github.ref_name }}
+        run: |
+          version="v$(jq -r .version package.json)"
+          if [ "$version" != "$TAG" ]; then
+            echo "::error::package.json says $version, but the tag is $TAG. Bump the version, then tag again."
+            exit 1
+          fi
+
+      - uses: oven-sh/setup-bun@0c5077e51419868618aeaa5fe8019c62421857d6 # v2.2.0
+
+      - name: Install dependencies
+        run: |
+          sudo apt-get update && sudo apt-get install -y --no-install-recommends libxml2-utils
+          bun install --frozen-lockfile
+        env:
+          HUSKY: "0"
+
+      - name: Check logos and tokens
+        run: bun run lint
+
+      - uses: actions/setup-node@v6
+        with:
+          node-version: 24
+          registry-url: https://registry.npmjs.org
+          package-manager-cache: false
+
+      # Trusted publishing needs npm 11.5.1 or later. NPM_TOKEN is only for the
+      # very first version, before a trusted publisher can be set up.
+      - name: Publish to npm
+        env:
+          NODE_AUTH_TOKEN: ${{ secrets.NPM_TOKEN }}
+        run: |
+          npm install --global npm@latest
+          npm publish --provenance
+
+      - name: Create the release
+        env:
+          GH_TOKEN: ${{ github.token }}
+          TAG: ${{ github.ref_name }}
+        run: |
+          notes=$(gh api "repos/$GITHUB_REPOSITORY/releases/generate-notes" -f tag_name="$TAG" --jq .body)
+          if grep -q "^## What's Changed" <<<"$notes"; then
+            notes=${notes/"## What's Changed"/"## Changelogs"}
+          else
+            previous=$(git describe --tags --abbrev=0 --match "v*.*.*" "$TAG^" 2>/dev/null || true)
+            commits=$(git log --no-merges --format='* %s (%h)' ${previous:+"$previous.."}"$TAG")
+            notes=$(printf '## Changelogs\n\n%s\n\n%s' "$commits" "$notes")
+          fi
+          gh release create "$TAG" --title "$TAG" --notes "$notes" --verify-tag
