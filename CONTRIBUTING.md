@@ -100,19 +100,9 @@ Every push to `main` and every pull request also run [GitHub Actions](https://do
    pull requests merged since the previous version, or its commits when no pull request was merged.
 4. Update the projects that should use it to the new version.
 
-### Setting up npm publishing
+### How publishing works
 
-The workflow publishes with npm [trusted publishing](https://docs.npmjs.com/trusted-publishers/), so no npm token is
-stored in GitHub. A trusted publisher can only be added to a package that already exists, so the first version is
-published with a token, once:
-
-1. In the `monetyo` organisation on npm, create a granular access token that can publish `@monetyo/brand`, and save
-   it in this repository's **Settings → Secrets and variables → Actions** as `NPM_TOKEN`.
-2. Release the first version as above.
-3. Delete the `NPM_TOKEN` secret and revoke the token.
-4. Just before the next release, add a trusted publisher on the package's settings page on npm: GitHub Actions,
-   organisation `monetyo`, repository `monetyo-brand`, workflow `release.yml`. From then on, every release uses it.
-
-> [!CAUTION]
-> A new trusted publisher expires if it hasn't published within two days of being created, so add it only when the
-> next release is ready.
+The Release workflow publishes through npm [trusted publishing](https://docs.npmjs.com/trusted-publishers/): npm
+trusts this repository's `release.yml` directly, so no npm token exists anywhere. The trusted publisher is set up in
+the package's settings on npm, and only accepts a workflow with that exact filename, so renaming `release.yml` stops
+releases until the trusted publisher is updated.
