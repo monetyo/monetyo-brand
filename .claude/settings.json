@@ -1,0 +1,14 @@
+{
+  "extraKnownMarketplaces": {
+    "monetyo": {
+      "source": {
+        "source": "github",
+        "repo": "monetyo/monetyo-devkit",
+        "ref": "v0.1.0"
+      }
+    }
+  },
+  "enabledPlugins": {
+    "monetyo@monetyo": true
+  }
+}
